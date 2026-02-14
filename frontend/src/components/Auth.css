@@ -1,0 +1,42 @@
+.auth-page {
+  background-color: #0a0a0a;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-container {
+  max-width: 400px;
+  width: 90%;
+  margin: 100px auto;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+.auth-container h2 {
+  font-family: 'Playfair Display', serif;
+  color: var(--color-gold);
+  margin-bottom: 30px;
+  font-size: 2rem;
+}
+
+.auth-link {
+  margin-top: 20px;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.auth-link a {
+  color: var(--color-gold);
+  text-decoration: none;
+  margin-left: 5px;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+}

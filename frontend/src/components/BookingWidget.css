@@ -1,0 +1,280 @@
+.booking-widget {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 30px;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.booking-widget.wide-mode {
+  max-width: 500px;
+}
+
+.booking-widget h2 {
+  font-family: 'Playfair Display', serif;
+  color: #fff;
+  margin-bottom: 25px;
+  text-align: center;
+  font-size: 1.8rem;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  font-family: 'Outfit', sans-serif;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  font-family: 'Outfit', sans-serif;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.react-datepicker-input:focus {
+  outline: none;
+  border-color: var(--color-gold);
+}
+
+.form-row {
+  display: flex;
+  gap: 15px;
+}
+
+.cta-button {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-gold);
+  color: #000;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Outfit', sans-serif;
+  text-transform: uppercase;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cta-button:hover {
+  background: #fff;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.cta-button.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Custom Datepicker Styles */
+.react-datepicker-input {
+  width: 100%;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.react-datepicker {
+  background-color: #1a1a1a !important;
+  border: 1px solid var(--color-gold) !important;
+  font-family: 'Outfit', sans-serif !important;
+}
+
+.react-datepicker__header {
+  background-color: #000 !important;
+  border-bottom: 1px solid #333 !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker__day-name,
+.react-datepicker__day,
+.react-datepicker__time-name {
+  color: #fff !important;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__time-list-item--selected {
+  background-color: var(--color-gold) !important;
+  color: #000 !important;
+}
+
+/* Success Message */
+.success-message {
+  text-align: center;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.check-icon {
+  width: 60px;
+  height: 60px;
+  background: var(--color-gold);
+  color: #000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin: 0 auto 20px;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.success-message h2 {
+  color: var(--color-gold);
+}
+
+.success-message p {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.error-text {
+  color: #ff4444;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* Multi-step Logic */
+.step-content {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.step-content.active {
+  display: block;
+}
+
+.preorder-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  padding-right: 5px;
+}
+
+.preorder-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+}
+
+.qty-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qty-controls button {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.qty-controls button:hover {
+  background: var(--color-gold);
+  color: black;
+}
+
+.step-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.back-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.action-right {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.skip-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #aaa;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+}
+
+
+.react-datepicker__day--disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(100%);
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.react-datepicker__day--disabled:hover {
+  background-color: transparent !important;
+  color: rgba(255, 255, 255, 0.3) !important;
+}

@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Playfair+Display:wght@700&display=swap');
+
+:root {
+  --color-bg-dark: #0a0a0a;
+  --color-gold: #cfaa6e;
+  --color-neon-cyan: #00f3ff;
+  --color-neon-purple: #bc13fe;
+  --color-glass: rgba(255, 255, 255, 0.05);
+  --font-primary: 'Outfit', sans-serif;
+  --font-display: 'Playfair Display', serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-bg-dark);
+  font-family: var(--font-primary);
+  color: white;
+  overflow-x: hidden;
+}

@@ -1,0 +1,146 @@
+.profile-page {
+  min-height: 100vh;
+  background-color: #0a0a0a;
+  padding-top: 80px;
+  color: #fff;
+}
+
+.profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 30px;
+  border-radius: 20px;
+  margin-bottom: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.avatar-circle {
+  width: 80px;
+  height: 80px;
+  background: var(--color-gold);
+  color: #000;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  font-family: 'Playfair Display', serif;
+  margin-right: 20px;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-info h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  margin-bottom: 5px;
+}
+
+.user-info p {
+  color: #aaa;
+  margin-bottom: 10px;
+}
+
+.badge {
+  background: rgba(255, 215, 0, 0.2);
+  color: var(--color-gold);
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.logout-action-btn {
+  background: transparent;
+  border: 1px solid #ff4444;
+  color: #ff4444;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.logout-action-btn:hover {
+  background: #ff4444;
+  color: #fff;
+}
+
+.bookings-section h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.booking-card {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 20px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.2s;
+}
+
+.booking-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(5px);
+}
+
+.booking-info h4 {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  color: var(--color-gold);
+}
+
+.booking-date {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.booking-status {
+  text-align: right;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.status-pill.confirmed {
+  background: rgba(0, 255, 0, 0.1);
+  color: #00ff00;
+}
+
+.status-pill.pending {
+  background: rgba(255, 165, 0, 0.1);
+  color: orange;
+}
+
+.price {
+  font-weight: bold;
+  font-size: 1.1rem;
+}

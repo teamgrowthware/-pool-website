@@ -1,0 +1,85 @@
+--- START DEBUG ---
+Connected to MongoDB
+
+--- Sample Raw Bookings (Latest 5) ---
+ID: 69901ddf5571050058c28cb7, Status: "Completed", Created: Sat Feb 14 2026 12:31:51 GMT+0530 (India Standard Time) (object)
+ID: 698f375c166fbd1e1e4743d0, Status: "Cancelled", Created: Fri Feb 13 2026 20:08:20 GMT+0530 (India Standard Time) (object)
+ID: 698f373f166fbd1e1e47414e, Status: "Cancelled", Created: Fri Feb 13 2026 20:07:51 GMT+0530 (India Standard Time) (object)
+ID: 698ef2d4581db4aa8e7b21ae, Status: "Cancelled", Created: Fri Feb 13 2026 15:15:56 GMT+0530 (India Standard Time) (object)
+ID: 698ee85a9b228b8f4af4811d, Status: "Completed", Created: Fri Feb 13 2026 14:31:14 GMT+0530 (India Standard Time) (object)
+
+--- Counts by Status ---
+[
+  {
+    "_id": "Cancelled",
+    "count": 5
+  },
+  {
+    "_id": "Completed",
+    "count": 4
+  },
+  {
+    "_id": "Confirmed",
+    "count": 5
+  }
+]
+
+--- Date Filter: >= 2026-01-14T18:30:00.000Z ---
+
+--- Aggregation Result (Grouped by Day & Status) ---
+[
+  {
+    "_id": {
+      "day": 12,
+      "month": 2,
+      "year": 2026,
+      "status": "Cancelled"
+    },
+    "count": 1
+  },
+  {
+    "_id": {
+      "day": 13,
+      "month": 2,
+      "year": 2026,
+      "status": "Cancelled"
+    },
+    "count": 4
+  },
+  {
+    "_id": {
+      "day": 13,
+      "month": 2,
+      "year": 2026,
+      "status": "Confirmed"
+    },
+    "count": 1
+  },
+  {
+    "_id": {
+      "day": 13,
+      "month": 2,
+      "year": 2026,
+      "status": "Completed"
+    },
+    "count": 3
+  },
+  {
+    "_id": {
+      "day": 12,
+      "month": 2,
+      "year": 2026,
+      "status": "Confirmed"
+    },
+    "count": 4
+  },
+  {
+    "_id": {
+      "day": 14,
+      "month": 2,
+      "year": 2026,
+      "status": "Completed"
+    },
+    "count": 1
+  }
+]
