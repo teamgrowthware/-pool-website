@@ -31,8 +31,11 @@ interface DashboardStats {
   dailyStats: { name: string; bookings: number }[];
 }
 
+import { useAuth } from '@/context/AuthContext';
+
 export default function DashboardPage() {
   const router = useRouter();
+  const { token, isLoading: authLoading } = useAuth();
   const { searchQuery } = useSearch();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -45,13 +48,24 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
+    if (!token) return;
+
     try {
       // Don't set loading to true on background refreshes, only initial load or retry
       if (!stats) setIsLoading(true);
       setError(null);
 
       const fetchJson = async (url: string) => {
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetch(url, {
+          cache: 'no-store',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (res.status === 401) {
+          // Handle unauthorized (optional: redirect to login if repeated, but AuthContext handles simple exp)
+          throw new Error("Unauthorized");
+        }
         if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.statusText}`);
         return res.json();
       };
@@ -69,28 +83,28 @@ export default function DashboardPage() {
       setInventory(inventoryData);
     } catch (err: any) {
       console.error("Dashboard fetch error:", err);
-      // specific error message
       setError(err.message || "Failed to load dashboard data.");
-      setError("Failed to load dashboard data. Please check your connection.");
     } finally {
       setIsLoading(false);
     }
-  }, [stats]); // stats dependency ensures we know if it's initial load
+  }, [stats, token]);
 
   useEffect(() => {
-    fetchData();
-    // Poll every 30 seconds
-    const interval = setInterval(fetchData, 30000);
+    if (!authLoading && token) {
+      fetchData();
+      // Poll every 30 seconds
+      const interval = setInterval(fetchData, 30000);
 
-    // Refetch on window focus (e.g., coming back from Bookings page)
-    const onFocus = () => fetchData();
-    window.addEventListener('focus', onFocus);
+      // Refetch on window focus
+      const onFocus = () => fetchData();
+      window.addEventListener('focus', onFocus);
 
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('focus', onFocus);
-    };
-  }, [fetchData]);
+      return () => {
+        clearInterval(interval);
+        window.removeEventListener('focus', onFocus);
+      };
+    }
+  }, [fetchData, authLoading, token]);
 
   // Filter Data based on Search Query
   // Filter Data based on Search Query
