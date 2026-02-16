@@ -73,7 +73,12 @@ export const PoolProvider = ({ children }: { children: ReactNode }) => {
                     ...t,
                     currentSession: {
                         ...t.currentSession,
-                        cafeOrders: [...(t.currentSession.cafeOrders || []), ...items.map(i => ({ ...i, quantity: 1 }))]
+                        cafeOrders: [...(t.currentSession.cafeOrders || []), ...items.map(i => ({
+                            menu_item_id: i.id,
+                            name: i.name,
+                            price: i.price,
+                            quantity: 1
+                        }))]
                     }
                 };
             }
