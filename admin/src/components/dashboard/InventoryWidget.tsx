@@ -1,7 +1,17 @@
 import Link from 'next/link';
 import { AlertTriangle, Package } from 'lucide-react';
 
-// ... (interfaces remain)
+interface InventoryItem {
+    _id: string;
+    name: string;
+    totalStock: number;
+    minStock: number;
+    unit: string;
+}
+
+interface InventoryWidgetProps {
+    inventory: InventoryItem[];
+}
 
 const InventoryWidget = ({ inventory }: InventoryWidgetProps) => {
     const lowStockItems = inventory.filter(item => item.totalStock <= item.minStock);
