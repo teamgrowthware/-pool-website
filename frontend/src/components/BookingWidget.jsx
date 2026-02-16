@@ -297,6 +297,12 @@ const BookingWidget = () => {
           </form>
         </>
       )}
+      <div style={{ marginTop: '20px', padding: '10px', background: '#f0f0f0', color: '#333', fontSize: '10px', border: '1px solid #ccc' }}>
+        <p><strong>Debug Info:</strong></p>
+        <p>API URL: {API_BASE_URL}</p>
+        <p>Tables Loaded: {tables.length}</p>
+        {errorMessage && <p style={{ color: 'red' }}>Error: {errorMessage}</p>}
+      </div>
     </div>
   );
 };
