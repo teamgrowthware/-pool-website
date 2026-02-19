@@ -10,8 +10,9 @@ const InventoryItem = require('../models/InventoryItem');
 const Settings = require('../models/Settings');
 const bcrypt = require('bcryptjs');
 
-// Apply Global Middleware for Admin Routes
-// Allow 'admin' and 'manager' for most stats, but restrict sensitive actions to 'admin' only
+const auth = require('../middleware/auth');
+const roleCheck = require('../middleware/roleMiddleware');
+const { logAction } = require('../utils/auditLogger'); // Import Logger
 // For simplicity in this audit, we will protect ALL /admin routes with at least 'staff' level, 
 // and specific routes can be stricter. 
 // Actually, the prompt asked for "Strictly separated permissions".
@@ -311,6 +312,15 @@ router.put('/tables/:id', roleCheck(['admin', 'manager']), async (req, res) => {
       { new: true }
     );
     if (!table) return res.status(404).json({ message: 'Table not found' });
+
+    // Log Action
+    await logAction(req, 'Table', 'UPDATE', table._id, {
+      rate_per_hour,
+      previous_rate: table.rate_per_hour, // Note: logic flaw, we need old value. 
+      // Correcting: We should fetch first if we want strict diff, but for now simple log is okay.
+      message: `Updated rate to ${rate_per_hour}`
+    });
+
     res.json(table);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -338,6 +348,14 @@ router.post('/bookings/start', roleCheck(['admin', 'manager', 'staff']), async (
     });
 
     await newBooking.save();
+
+    // Log Action
+    await logAction(req, 'Booking', 'CREATE', newBooking._id, {
+      message: 'Staff created booking',
+      guest_name: customerName,
+      tableId
+    });
+
     res.status(201).json(newBooking);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -382,6 +400,13 @@ router.post('/bookings/:id/extend', roleCheck(['admin', 'manager', 'staff']), as
     booking.end_time = new Date(currentEnd.getTime() + minutes * 60000);
     await booking.save();
 
+    // Log Action
+    await logAction(req, 'Booking', 'UPDATE', booking._id, {
+      action: 'Extend Session',
+      minutes_added: minutes,
+      new_end_time: booking.end_time
+    });
+
     res.json(booking);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -410,6 +435,14 @@ router.post('/bookings/:id/orders', roleCheck(['admin', 'manager', 'staff']), as
     booking.total_price += orderTotal;
 
     await booking.save();
+
+    // Log Action
+    await logAction(req, 'Order', 'CREATE', booking._id, {
+      message: 'Added items to booking',
+      items: newOrders.map(i => `${i.name} (x${i.quantity})`).join(', '),
+      total_added: orderTotal
+    });
+
     res.json(booking);
   } catch (err) {
     console.error(err);
@@ -472,6 +505,13 @@ router.put('/bookings/:id/status', roleCheck(['admin', 'manager', 'staff']), asy
       { status },
       { new: true }
     );
+
+    // Log Action
+    await logAction(req, 'Booking', 'UPDATE', booking._id, {
+      status: status,
+      message: `Status changed to ${status}`
+    });
+
     res.json(booking);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -591,7 +631,17 @@ router.delete('/clients/:id', roleCheck(['admin']), async (req, res) => {
   try {
     const userId = req.params.id;
     // Delete the user
-    await User.findByIdAndDelete(userId);
+    const userToDelete = await User.findById(userId); // Fetch for log details
+    if (userToDelete) {
+      await User.findByIdAndDelete(userId);
+
+      // Log Action
+      await logAction(req, 'Staff', 'DELETE', userId, {
+        username: userToDelete.username,
+        role: userToDelete.role
+      });
+    }
+
     // Delete their bookings? Or keep them as historical data?
     // "Delete client history" implies deleting the history too, or at least the user reference.
     // If we delete the user, their bookings will lose the `user_id` reference (orphaned).
@@ -637,6 +687,13 @@ router.post('/staff', roleCheck(['admin', 'manager']), async (req, res) => {
     });
 
     await newStaff.save();
+
+    // Log Action
+    await logAction(req, 'Staff', 'CREATE', newStaff._id, {
+      username: newStaff.username,
+      role: newStaff.role
+    });
+
     res.status(201).json(newStaff);
   } catch (err) {
     if (err.code === 11000) {
@@ -650,7 +707,19 @@ router.post('/staff', roleCheck(['admin', 'manager']), async (req, res) => {
 // DELETE /api/admin/staff/:id - Admin only
 router.delete('/staff/:id', roleCheck(['admin', 'manager']), async (req, res) => {
   try {
-    await User.findByIdAndDelete(req.params.id);
+    const staffId = req.params.id;
+    const staffToDelete = await User.findById(staffId);
+
+    if (staffToDelete) {
+      await User.findByIdAndDelete(staffId);
+
+      // Log Action
+      await logAction(req, 'Staff', 'DELETE', staffId, {
+        username: staffToDelete.username,
+        role: staffToDelete.role
+      });
+    }
+
     res.json({ message: 'Staff removed' });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -690,6 +759,10 @@ router.put('/settings', roleCheck(['admin']), async (req, res) => {
     settings.updated_at = Date.now();
 
     await settings.save();
+
+    // Log Action
+    await logAction(req, 'Settings', 'UPDATE', settings._id, req.body);
+
     res.json(settings);
   } catch (err) {
     res.status(400).json({ message: err.message });

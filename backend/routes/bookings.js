@@ -3,6 +3,7 @@ const router = express.Router();
 console.log('Loading bookings router...');
 const Booking = require('../models/Booking');
 const Table = require('../models/Table');
+const { logAction } = require('../utils/auditLogger');
 
 // GET /api/bookings - Get all bookings (optional filter by date)
 router.get('/', async (req, res) => {
@@ -70,6 +71,15 @@ router.post('/', async (req, res) => {
 
     const savedBooking = await newBooking.save();
     console.log("Booking Saved Successfully:", savedBooking._id);
+
+    // Log Action
+    await logAction(req, 'Booking', 'CREATE', savedBooking._id, {
+      table_id,
+      guest_name: guest_name || 'User',
+      start_time,
+      end_time
+    });
+
     res.status(201).json(savedBooking);
 
   } catch (err) {

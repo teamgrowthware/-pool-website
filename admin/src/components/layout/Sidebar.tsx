@@ -11,7 +11,8 @@ import {
     Package,
     Settings,
     CircleDot,
-    Coffee
+    Coffee,
+    FileText
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
@@ -23,6 +24,7 @@ const navItems = [
     { name: 'Clients', href: '/clients', icon: Users },
     { name: 'Staff', href: '/staff', icon: Users },
     { name: 'Inventory', href: '/inventory', icon: Package },
+    { name: 'Audit Logs', href: '/audit-logs', icon: FileText },
     { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
@@ -41,7 +43,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     const filteredNavItems = navItems.filter(item => {
         if (!user) return false;
         if (user.role === 'admin') return true;
-        if (user.role === 'manager') return item.name !== 'Settings';
+        if (user.role === 'manager') return item.name !== 'Settings' && item.name !== 'Audit Logs';
         if (user.role === 'staff') return ['Dashboard', 'Bookings', 'Pool Management', 'Cafe'].includes(item.name);
         return false;
     });
