@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({
   origin: '*', // Allow all origins (you can restrict this to specific domains in production)
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token']
 }));
 app.use(express.json());
 app.use((req, res, next) => {
