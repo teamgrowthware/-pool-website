@@ -43,6 +43,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/tables', tableRoutes);
 app.use('/api/inventory', require('./routes/inventory'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/audit', require('./routes/audit'));
 console.log('Routes Mounted: /api/bookings, /api/menu, /api/orders, /api/tables, /api/admin');
 
 // Start Server
