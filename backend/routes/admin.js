@@ -27,7 +27,7 @@ const bcrypt = require('bcryptjs');
 router.use(auth);
 
 // GET /api/admin/dashboard-stats - Admin & Manager only
-router.get('/dashboard-stats', roleCheck(['admin', 'manager']), async (req, res) => {
+router.get('/dashboard-stats', roleCheck(['admin', 'manager', 'staff']), async (req, res) => {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -189,7 +189,7 @@ router.get('/dashboard-stats', roleCheck(['admin', 'manager']), async (req, res)
 
 
 // GET /api/admin/cafe-stats - Admin & Manager only
-router.get('/cafe-stats', roleCheck(['admin', 'manager']), async (req, res) => {
+router.get('/cafe-stats', roleCheck(['admin', 'manager', 'staff']), async (req, res) => {
   try {
     // 1. Total Revenue (From Orders)
     // We could also include 'pre_orders' from bookings if needed, but for now let's stick to direct Orders
