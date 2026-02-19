@@ -63,7 +63,10 @@ export default function DashboardPage() {
           }
         });
         if (res.status === 401) {
-          // Handle unauthorized (optional: redirect to login if repeated, but AuthContext handles simple exp)
+          // Token is likely invalid/expired. Force logout.
+          localStorage.removeItem('admin_token');
+          localStorage.removeItem('admin_user');
+          window.location.href = '/login';
           throw new Error("Unauthorized");
         }
         if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.statusText}`);
