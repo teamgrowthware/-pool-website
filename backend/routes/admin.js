@@ -479,32 +479,109 @@ router.put('/bookings/:id/status', roleCheck(['admin', 'manager', 'staff']), asy
 });
 
 // GET /api/admin/clients - Admin & Manager
+// GET /api/admin/clients - Admin & Manager
 router.get('/clients', roleCheck(['admin', 'manager']), async (req, res) => {
   try {
-    const clients = await User.find({ role: 'customer' }).select('-password');
+    // 1. Fetch all registered customers
+    const users = await User.find({ role: 'customer' }).select('-password');
 
-    // Enhance with booking stats
-    const clientData = await Promise.all(clients.map(async (client) => {
-      const bookings = await Booking.find({
-        $or: [{ user_id: client._id }, { guest_phone: client.phone }]
-      }).sort({ created_at: -1 });
+    // 2. Fetch all bookings
+    const bookings = await Booking.find().sort({ created_at: -1 });
 
-      const lastBooking = bookings.length > 0 ? bookings[0] : null;
+    // 3. Create a map of clients (key = unique ID or Phone)
+    const clientMap = new Map();
 
-      return {
-        id: client._id,
-        name: client.username,
-        phone: client.phone,
-        email: client.email,
-        totalVisits: bookings.length,
-        lastVisit: lastBooking ? lastBooking.created_at : null,
-        isNew: bookings.length === 0,
-        bookings: bookings // Optional: include recent bookings if needed for details
-      };
-    }));
+    // Initialize with registered users
+    users.forEach(user => {
+      clientMap.set(user._id.toString(), {
+        id: user._id.toString(),
+        name: user.username,
+        phone: user.phone,
+        email: user.email,
+        bookings: [],
+        totalVisits: 0,
+        lastVisit: null,
+        isNew: true, // Will be updated if bookings found
+        type: 'Registered'
+      });
+    });
+
+    // 4. Process bookings
+    bookings.forEach(booking => {
+      let client = null;
+
+      // Case A: Booking linked to User ID
+      if (booking.user_id && clientMap.has(booking.user_id.toString())) {
+        client = clientMap.get(booking.user_id.toString());
+      }
+
+      // Case B: No User ID (Guest) or User ID not found in map?
+      // Try to match by Phone if no text match
+      if (!client && booking.guest_phone) {
+        // Search in existing clients by phone
+        for (let [key, c] of clientMap.entries()) {
+          if (c.phone === booking.guest_phone) {
+            client = c;
+            break;
+          }
+        }
+
+        // If still no client, create a new Guest Client
+        if (!client) {
+          const guestId = `guest_${booking.guest_phone}`;
+          // Check if we already created this guest in this loop
+          if (clientMap.has(guestId)) {
+            client = clientMap.get(guestId);
+          } else {
+            client = {
+              id: guestId,
+              name: booking.guest_name || 'Guest',
+              phone: booking.guest_phone,
+              email: null,
+              bookings: [],
+              totalVisits: 0,
+              lastVisit: null,
+              isNew: true,
+              type: 'Guest'
+            };
+            clientMap.set(guestId, client);
+          }
+        }
+      }
+
+      // If we found/created a client, add booking
+      if (client) {
+        client.bookings.push(booking);
+        client.totalVisits += 1;
+        client.isNew = false; // Has at least one booking
+
+        // Update last visit if this booking is more recent
+        const bookingDate = new Date(booking.created_at);
+        if (!client.lastVisit || bookingDate > new Date(client.lastVisit)) {
+          client.lastVisit = booking.created_at;
+        }
+
+        // If name was generic 'Guest' and this booking has a name, update it? 
+        // Optional polish, but let's keep it simple.
+        if (client.name === 'Guest' && booking.guest_name) {
+          client.name = booking.guest_name;
+        }
+      }
+    });
+
+    // 5. Convert to array and handle sorting/defaults
+    const clientData = Array.from(clientMap.values());
+
+    // Sort by recent visit (optional but good for UX)
+    clientData.sort((a, b) => {
+      const dateA = a.lastVisit ? new Date(a.lastVisit) : 0;
+      const dateB = b.lastVisit ? new Date(b.lastVisit) : 0;
+      return dateB - dateA;
+    });
 
     res.json(clientData);
   } catch (err) {
+    console.error("Error fetching clients:", err);
     res.status(500).json({ message: err.message });
   }
 });
