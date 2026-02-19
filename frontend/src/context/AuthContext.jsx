@@ -9,15 +9,29 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (token) {
-      // Decode token or fetch user profile if needed. 
-      // For now, we trust the token existence and maybe store user data in localStorage too, 
-      // or decode it. Let's keep it simple: if token exists, we are "logged in".
-      // Ideally, we should verify token with backend /api/auth/me
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+    const verifyToken = async () => {
+      if (token) {
+        try {
+          const res = await fetch(`${API_BASE_URL}/auth/me`, {
+            headers: { 'x-auth-token': token }
+          });
+          if (res.ok) {
+            const userData = await res.json();
+            setUser(userData);
+            localStorage.setItem('user', JSON.stringify(userData));
+          } else {
+            // Invalid token
+            logout();
+          }
+        } catch (err) {
+          console.error("Token verification failed:", err);
+          logout();
+        }
+      }
+      setLoading(false);
+    };
+
+    verifyToken();
   }, [token]);
 
   const login = async (email, password) => {

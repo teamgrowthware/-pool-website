@@ -35,7 +35,7 @@ import { useAuth } from '@/context/AuthContext';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { token, isLoading: authLoading } = useAuth();
+  const { user, token, isLoading: authLoading } = useAuth();
   const { searchQuery } = useSearch();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -142,7 +142,7 @@ export default function DashboardPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Dashboard Overview</h1>
-        <p className="text-slate-500">Welcome back, John. Here's what's happening today.</p>
+        <p className="text-slate-500">Welcome back, {user?.username || 'Admin'}. Here&apos;s what&apos;s happening today.</p>
       </div>
 
       {/* Stat Cards */}
