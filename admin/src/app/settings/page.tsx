@@ -68,7 +68,9 @@ export default function SettingsPage() {
     const fetchTables = async () => {
         setIsLoading(true);
         try {
-            const res = await fetch(`${API_BASE_URL}/admin/tables`);
+            const res = await fetch(`${API_BASE_URL}/admin/tables`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (res.ok) {
                 const data = await res.json();
                 setTables(data);
@@ -85,7 +87,10 @@ export default function SettingsPage() {
         setIsLoading(true);
         try {
             const res = await fetch(`${API_BASE_URL}/auth/users`, {
-                headers: { 'x-auth-token': token || '' }
+                headers: {
+                    'x-auth-token': token || '',
+                    'Authorization': `Bearer ${token}`
+                }
             });
             if (res.ok) {
                 const data = await res.json();
@@ -100,7 +105,9 @@ export default function SettingsPage() {
 
     const fetchSettings = async () => {
         try {
-            const res = await fetch(`${API_BASE_URL}/admin/settings`);
+            const res = await fetch(`${API_BASE_URL}/admin/settings`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (res.ok) {
                 const data = await res.json();
                 setBusinessProfile({
@@ -116,10 +123,12 @@ export default function SettingsPage() {
     };
 
     useEffect(() => {
-        if (activeTab === 'tables') fetchTables();
-        if (activeTab === 'business') fetchSettings();
-        if (activeTab === 'team') fetchUniqueUsers();
-    }, [activeTab]);
+        if (token) {
+            if (activeTab === 'tables') fetchTables();
+            if (activeTab === 'business') fetchSettings();
+            if (activeTab === 'team') fetchUniqueUsers();
+        }
+    }, [activeTab, token]);
 
     // Table Rate Listeners
     const handleEditRate = (table: PoolTable) => {
@@ -134,7 +143,10 @@ export default function SettingsPage() {
         try {
             const res = await fetch(`${API_BASE_URL}/admin/tables/${editingTable.id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ rate_per_hour: parseFloat(editRate) })
             });
 
@@ -240,7 +252,10 @@ export default function SettingsPage() {
         try {
             const res = await fetch(`${API_BASE_URL}/admin/settings`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     business_name: businessProfile.name,
                     business_address: businessProfile.address,

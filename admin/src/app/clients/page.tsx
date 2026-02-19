@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Phone, Calendar, Clock, ChevronDown, ChevronUp, Search, History } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 interface ClientData {
     id: string;
@@ -16,6 +17,7 @@ interface ClientData {
 }
 
 export default function ClientsPage() {
+    const { token } = useAuth();
     const [clients, setClients] = useState<ClientData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -23,7 +25,9 @@ export default function ClientsPage() {
 
     const fetchClients = async () => {
         try {
-            const res = await fetch(`${API_BASE_URL}/admin/clients`);
+            const res = await fetch(`${API_BASE_URL}/admin/clients`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (res.ok) {
                 const data = await res.json();
                 setClients(data);
@@ -36,8 +40,10 @@ export default function ClientsPage() {
     };
 
     useEffect(() => {
-        fetchClients();
-    }, []);
+        if (token) {
+            fetchClients();
+        }
+    }, [token]);
 
     // Helper to toggle expansion
     const toggleExpand = (id: string) => {
@@ -49,7 +55,10 @@ export default function ClientsPage() {
         if (!confirm('Are you sure you want to delete this client and all their history? This cannot be undone.')) return;
 
         try {
-            const res = await fetch(`${API_BASE_URL}/admin/clients/${id}`, { method: 'DELETE' });
+            const res = await fetch(`${API_BASE_URL}/admin/clients/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (res.ok) {
                 fetchClients(); // Refresh list
             } else {

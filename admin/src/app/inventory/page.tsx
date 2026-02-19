@@ -4,8 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { Package, Search, Filter, AlertTriangle, CheckCircle2, XCircle, Plus, Minus, Trash2 } from 'lucide-react';
 import { InventoryItem } from '@/types';
 import { API_BASE_URL } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 export default function InventoryPage() {
+    const { token } = useAuth();
     const [inventory, setInventory] = useState<InventoryItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -21,7 +23,9 @@ export default function InventoryPage() {
 
     const fetchInventory = async () => {
         try {
-            const res = await fetch(`${API_BASE_URL}/inventory`);
+            const res = await fetch(`${API_BASE_URL}/inventory`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (res.ok) {
                 const data = await res.json();
                 const mapped = data.map((item: any) => ({ ...item, id: item._id }));
@@ -35,8 +39,10 @@ export default function InventoryPage() {
     };
 
     useEffect(() => {
-        fetchInventory();
-    }, []);
+        if (token) {
+            fetchInventory();
+        }
+    }, [token]);
 
     const updateUsedStock = async (id: string, delta: number) => {
         const item = inventory.find(i => i.id === id);
@@ -50,7 +56,10 @@ export default function InventoryPage() {
         try {
             await fetch(`${API_BASE_URL}/inventory/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ used: newUsed })
             });
         } catch (err) {
@@ -62,7 +71,10 @@ export default function InventoryPage() {
     const handleDelete = async (id: string) => {
         if (!confirm('Delete this item?')) return;
         try {
-            const res = await fetch(`${API_BASE_URL}/inventory/${id}`, { method: 'DELETE' });
+            const res = await fetch(`${API_BASE_URL}/inventory/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (res.ok) fetchInventory();
         } catch (err) {
             console.error(err);
@@ -74,7 +86,10 @@ export default function InventoryPage() {
         try {
             const res = await fetch(`${API_BASE_URL}/inventory`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify(newItem)
             });
             if (res.ok) {

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Plus, Search, Trash2, Shield, Mail, Phone, User as UserIcon } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 // Reusing types locally or importing if available
 interface StaffUser {
@@ -14,6 +15,7 @@ interface StaffUser {
 }
 
 export default function StaffPage() {
+  const { token } = useAuth();
   const [staff, setStaff] = useState<StaffUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,7 +32,9 @@ export default function StaffPage() {
 
   const fetchStaff = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/admin/staff`);
+      const res = await fetch(`${API_BASE_URL}/admin/staff`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       if (res.ok) {
         const data = await res.json();
         setStaff(data);
@@ -43,15 +47,20 @@ export default function StaffPage() {
   };
 
   useEffect(() => {
-    fetchStaff();
-  }, []);
+    if (token) {
+      fetchStaff();
+    }
+  }, [token]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const res = await fetch(`${API_BASE_URL}/admin/staff`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(formData)
       });
 
@@ -72,7 +81,8 @@ export default function StaffPage() {
     if (!confirm('Are you sure you want to remove this staff member?')) return;
     try {
       const res = await fetch(`${API_BASE_URL}/admin/staff/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) fetchStaff();
     } catch (err) {
