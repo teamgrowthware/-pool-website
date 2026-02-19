@@ -118,7 +118,9 @@ const BookingWidget = () => {
       const hourlyRate = tableDetails ? (tableDetails.rate_per_hour || 20) : 20;
 
       const payload = {
-        user_id: user.id,
+        user_id: user ? user.id : undefined, // Send user_id only if logged in
+        guest_name: formData.name, // Always send the name entered in the form
+        guest_phone: formData.phone, // Always send the phone entered in the form
         table_id: selectedTable,
         start_time: combinedStart,
         end_time: combinedEnd,
