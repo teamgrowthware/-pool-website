@@ -31,7 +31,7 @@ router.get('/user/:user_id', async (req, res) => {
 
 // POST /api/bookings - Create a new booking with overlap check
 router.post('/', async (req, res) => {
-  const { user_id, table_id, start_time, end_time, total_price, pre_orders } = req.body;
+  const { user_id, table_id, start_time, end_time, total_price, pre_orders, guest_name, guest_phone } = req.body;
 
   console.log("Received Booking Request:", JSON.stringify(req.body, null, 2));
 
@@ -63,7 +63,9 @@ router.post('/', async (req, res) => {
       start_time: start,
       end_time: end,
       total_price,
-      pre_orders // Ensure pre_orders are passed
+      pre_orders, // Ensure pre_orders are passed
+      guest_name,
+      guest_phone
     });
 
     const savedBooking = await newBooking.save();
