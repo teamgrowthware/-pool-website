@@ -6,8 +6,10 @@ import { Booking } from '@/types';
 import { API_BASE_URL } from '@/lib/api';
 
 import BookingDetailsModal from '@/components/bookings/BookingDetailsModal';
+import { useAuth } from '@/context/AuthContext';
 
 export default function BookingsPage() {
+  const { token } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState('All');
@@ -20,7 +22,11 @@ export default function BookingsPage() {
       if (filterStatus !== 'All') params.append('status', filterStatus);
       if (searchQuery) params.append('search', searchQuery);
 
-      const res = await fetch(`${API_BASE_URL}/admin/bookings?${params.toString()}`);
+      const res = await fetch(`${API_BASE_URL}/admin/bookings?${params.toString()}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       if (res.ok) {
         const data = await res.json();
         // Map backend data to frontend Booking interface
@@ -48,8 +54,8 @@ export default function BookingsPage() {
   };
 
   useEffect(() => {
-    fetchBookings();
-  }, [filterStatus]); // Re-fetch when filter changes
+    if (token) fetchBookings();
+  }, [filterStatus, token]); // Re-fetch when filter changes
 
   // Debounce search
   useEffect(() => {
@@ -61,7 +67,10 @@ export default function BookingsPage() {
     try {
       const res = await fetch(`${API_BASE_URL}/admin/bookings/${id}/status`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ status: newStatus })
       });
       if (res.ok) fetchBookings();
