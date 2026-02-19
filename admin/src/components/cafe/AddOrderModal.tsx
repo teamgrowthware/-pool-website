@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Search, Plus, Minus, User, Table, Coffee } from 'lucide-react';
 import { CafeItem } from '@/types';
 import { API_BASE_URL } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 interface AddOrderModalProps {
   items: CafeItem[];
@@ -10,6 +11,7 @@ interface AddOrderModalProps {
 }
 
 export default function AddOrderModal({ items, onClose, onOrderCreated }: AddOrderModalProps) {
+  const { token } = useAuth();
   const [orderType, setOrderType] = useState<'direct' | 'table'>('direct');
   const [selectedTable, setSelectedTable] = useState<string>('');
   const [activeTables, setActiveTables] = useState<any[]>([]);
@@ -25,7 +27,9 @@ export default function AddOrderModal({ items, onClose, onOrderCreated }: AddOrd
 
   const fetchActiveTables = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/admin/tables`);
+      const res = await fetch(`${API_BASE_URL}/admin/tables`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       if (res.ok) {
         const tables = await res.json();
         // Filter only active tables with running sessions
@@ -77,7 +81,10 @@ export default function AddOrderModal({ items, onClose, onOrderCreated }: AddOrd
 
         const res = await fetch(`${API_BASE_URL}/admin/bookings/${table.currentSession.bookingId}/orders`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify({
             items: cart.map(({ item, quantity }) => ({
               id: item.id,
@@ -99,7 +106,10 @@ export default function AddOrderModal({ items, onClose, onOrderCreated }: AddOrd
         // Direct Order
         const res = await fetch(`${API_BASE_URL}/orders`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify({
             customerName: customerName || 'Walk-in',
             items: cart.map(({ item, quantity }) => ({

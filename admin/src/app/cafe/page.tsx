@@ -6,6 +6,7 @@ import { mockCafeItems, mockCafeOrders, mockInventory } from '@/mock/data';
 import { CafeItem, CafeOrder } from '@/types';
 import { API_BASE_URL } from '@/lib/api';
 import AddOrderModal from '@/components/cafe/AddOrderModal';
+import { useAuth } from '@/context/AuthContext';
 
 const TABS = [
     { id: 'overview', label: 'Overview', icon: TrendingUp },
@@ -15,6 +16,7 @@ const TABS = [
 ];
 
 export default function CafeManagement() {
+    const { token } = useAuth();
     const [items, setItems] = useState<CafeItem[]>([]);
     const [orders, setOrders] = useState<CafeOrder[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -39,10 +41,14 @@ export default function CafeManagement() {
     const fetchData = async () => {
         setIsLoading(true);
         try {
+            const headers = {
+                'Authorization': `Bearer ${token}`
+            };
+
             const [menuRes, statsRes, ordersRes] = await Promise.all([
-                fetch(`${API_BASE_URL}/menu`),
-                fetch(`${API_BASE_URL}/admin/cafe-stats`),
-                fetch(`${API_BASE_URL}/orders`)
+                fetch(`${API_BASE_URL}/menu`, { headers }),
+                fetch(`${API_BASE_URL}/admin/cafe-stats`, { headers }),
+                fetch(`${API_BASE_URL}/orders`, { headers })
             ]);
 
             if (menuRes.ok) {
@@ -84,8 +90,8 @@ export default function CafeManagement() {
     };
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        if (token) fetchData();
+    }, [token]);
 
     const handleEdit = (item: CafeItem) => {
         setFormData({
@@ -111,7 +117,10 @@ export default function CafeManagement() {
 
             const res = await fetch(url, {
                 method: method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     ...formData,
                     price: Number(formData.price)
@@ -131,7 +140,10 @@ export default function CafeManagement() {
     const handleDelete = async (id: string) => {
         if (!confirm('Are you sure you want to delete this item?')) return;
         try {
-            await fetch(`${API_BASE_URL}/menu/${id}`, { method: 'DELETE' });
+            await fetch(`${API_BASE_URL}/menu/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             fetchData(); // Refresh data
         } catch (err) {
             console.error("Failed to delete item:", err);
@@ -147,7 +159,10 @@ export default function CafeManagement() {
     const handleDeleteOrder = async (id: string) => {
         if (!confirm('Are you sure you want to delete this order history?')) return;
         try {
-            const res = await fetch(`${API_BASE_URL}/orders/${id}`, { method: 'DELETE' });
+            const res = await fetch(`${API_BASE_URL}/orders/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (res.ok) {
                 fetchData(); // Refresh data
             } else {
