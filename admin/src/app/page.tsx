@@ -113,7 +113,7 @@ export default function DashboardPage() {
   // Filter Data based on Search Query
   const filteredBookings = recentBookings.filter((b: any) => {
     const q = searchQuery.toLowerCase();
-    const clientName = b.user_id?.username || b.guest_name || '';
+    const clientName = b.guest_name || b.user_id?.username || b.guest_name || 'Guest';
     const tableName = b.table_id ? `${b.table_id.type} ${b.table_id.table_number}` : '';
     const status = b.status || '';
 

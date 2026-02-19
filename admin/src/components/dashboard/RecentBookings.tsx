@@ -60,10 +60,10 @@ const RecentBookings = ({ bookings }: RecentBookingsProps) => {
                             <tr key={booking._id} className="hover:bg-slate-50/50 transition-colors">
                                 <td className="px-6 py-4">
                                     <div className="font-medium text-slate-900">
-                                        {booking.user_id ? booking.user_id.username : (booking.guest_name || 'Guest')}
+                                        {booking.guest_name || (booking.user_id ? booking.user_id.username : 'Guest')}
                                     </div>
                                     <div className="text-xs text-slate-500">
-                                        {booking.user_id ? booking.user_id.phone : (booking.guest_phone || 'N/A')}
+                                        {booking.guest_phone || (booking.user_id ? booking.user_id.phone : 'N/A')}
                                     </div>
                                 </td>
                                 <td className="px-6 py-4">

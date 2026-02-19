@@ -33,8 +33,8 @@ export default function BookingsPage() {
         // Map backend data to frontend Booking interface
         const mappedData = data.map((b: any) => ({
           id: b._id,
-          clientName: b.user_id?.username || b.guest_name || 'Guest',
-          phone: b.user_id?.phone || b.guest_phone || 'N/A',
+          clientName: b.guest_name || b.user_id?.username || 'Guest',
+          phone: b.guest_phone || b.user_id?.phone || 'N/A',
           type: b.table_id ? 'pool' : 'cafe',
           resourceName: b.table_id ? `Table ${b.table_id.table_number}` : 'Cafe Order',
           subType: b.table_id?.type || 'General',
