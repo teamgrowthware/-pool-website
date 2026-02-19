@@ -10,8 +10,6 @@ const InventoryItem = require('../models/InventoryItem');
 const Settings = require('../models/Settings');
 const bcrypt = require('bcryptjs');
 
-const auth = require('../middleware/auth');
-const roleCheck = require('../middleware/roleMiddleware');
 const { logAction } = require('../utils/auditLogger'); // Import Logger
 // For simplicity in this audit, we will protect ALL /admin routes with at least 'staff' level, 
 // and specific routes can be stricter. 
