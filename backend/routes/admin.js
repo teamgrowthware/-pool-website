@@ -528,7 +528,7 @@ router.delete('/clients/:id', roleCheck(['admin']), async (req, res) => {
 });
 
 // GET /api/admin/staff - Admin only
-router.get('/staff', roleCheck(['admin']), async (req, res) => {
+router.get('/staff', roleCheck(['admin', 'manager']), async (req, res) => {
   try {
     // Fetch users who are NOT 'client' (assuming 'client' or 'user' is default for customers)
     // Or fetch explicitly by role
@@ -542,7 +542,7 @@ router.get('/staff', roleCheck(['admin']), async (req, res) => {
 });
 
 // POST /api/admin/staff - Admin only
-router.post('/staff', roleCheck(['admin']), async (req, res) => {
+router.post('/staff', roleCheck(['admin', 'manager']), async (req, res) => {
   const { username, password, phone, email, role } = req.body;
   try {
     // Check if user exists
@@ -571,7 +571,7 @@ router.post('/staff', roleCheck(['admin']), async (req, res) => {
 });
 
 // DELETE /api/admin/staff/:id - Admin only
-router.delete('/staff/:id', roleCheck(['admin']), async (req, res) => {
+router.delete('/staff/:id', roleCheck(['admin', 'manager']), async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
     res.json({ message: 'Staff removed' });
