@@ -17,6 +17,7 @@ export default function BookingsPage() {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   const fetchBookings = async () => {
+    if (!token) return;
     try {
       const params = new URLSearchParams();
       if (filterStatus !== 'All') params.append('status', filterStatus);
@@ -59,9 +60,11 @@ export default function BookingsPage() {
 
   // Debounce search
   useEffect(() => {
-    const timer = setTimeout(fetchBookings, 500);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
+    if (token) {
+      const timer = setTimeout(fetchBookings, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [searchQuery, token]);
 
   const updateStatus = async (id: string, newStatus: string) => {
     try {
